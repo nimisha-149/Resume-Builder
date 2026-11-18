@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Resume Builder</title>
+<style>
+:root{--ink:#172554;--accent:#2563eb;--line:#dbe3ef;--bg:#f3f6fb}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#1e293b}
+header{background:var(--ink);color:white;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:21px;margin:0}header p{margin:5px 0 0;color:#cbd5e1;font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+button,.filebtn{border:0;border-radius:7px;padding:10px 13px;font-weight:600;cursor:pointer;background:var(--accent);color:white}
+button.secondary,.filebtn{background:#e2e8f0;color:#172554}button:hover,.filebtn:hover{opacity:.88}
+main{display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:20px;padding:20px;max-width:1500px;margin:auto}
+.panel{background:white;border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:0 4px 16px #0f172a0a}
+h2{font-size:17px;color:var(--ink);margin:0 0 13px}.group{margin-bottom:17px}.group h3{font-size:13px;color:#475569;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line);padding-bottom:7px}
+label{display:block;font-size:12px;font-weight:600;margin:9px 0 4px;color:#475569}
+input,textarea,select{width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:6px;font:13px Arial;background:white}
+textarea{min-height:62px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#sectionsList{display:flex;flex-direction:column;gap:7px}
+.section-item{padding:9px;border:1px solid var(--line);border-radius:7px;background:#f8fafc;cursor:grab;font-size:13px;display:flex;justify-content:space-between}
+.hint{font-size:11px;color:#64748b;line-height:1.5}
+.preview-wrap{overflow:auto;background:#e8edf5;padding:18px;border-radius:9px;min-height:700px}
+#resume{width:210mm;min-height:297mm;margin:0 auto;background:white;padding:18mm 17mm;box-shadow:0 3px 18px #0f172a20;color:#1f2937;overflow-wrap:anywhere}
+#resume h1{font-size:27px;margin:0 0 5px;color:#172554}#resume .contact{font-size:10px;color:#64748b;margin-bottom:20px}
+#resume h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #cbd5e1;padding-bottom:5px;margin:16px 0 7px;color:#1d4ed8}
+#resume p{font-size:11px;line-height:1.55;margin:4px 0;white-space:pre-line}
+#resume .entry-title{font-weight:bold;font-size:11px;margin-top:7px}
+#resume .muted{font-size:10px;color:#64748b}
+#resume.template2{font-family:Georgia,serif;border-top:12px solid #0f766e}
+#resume.template2 h1{color:#0f766e;font-family:Georgia,serif;font-size:30px}
+#resume.template2 h2{color:#0f766e;border-bottom:2px solid #99f6e4}
+#resume.template3{border-left:12px solid #7c3aed;padding-left:15mm}
+#resume.template3 h1{color:#6d28d9}
+#resume.template3 h2{color:#6d28d9;border-bottom:1px solid #ddd6fe}
+#resume .empty{color:#94a3b8;font-style:italic}
+@media(max-width:900px){main{grid-template-columns:1fr;padding:10px}#resume{margin:0;width:210mm}.preview-wrap{min-height:400px}}
+@media print{
+ @page{size:A4;margin:0}
+ body{background:white}
+ header,.editor,.preview-title{display:none!important}
+ main{display:block;padding:0;margin:0;max-width:none}
+ .preview-wrap{padding:0;background:white;overflow:visible;border:0}
+ #resume{width:210mm;min-height:297mm;margin:0;box-shadow:none;padding:17mm}
+}
+</style>
+</head>
+<body>
+<header>
+ <div><h1>My Resume Builder</h1><p>Create, preview and export a professional A4 resume</p></div>
+ <div class="actions">
+  <button onclick="window.print()">Export PDF</button>
+  <button class="secondary" onclick="saveData()">Save Data</button>
+  <label class="filebtn" style="margin:0">Load Data<input id="loadFile" type="file" accept=".json,application/json" hidden onchange="loadData(event)"></label>
+ </div>
+</header>
+<main>
+<section class="panel editor">
+ <h2>Resume Details</h2>
+ <div class="group">
+  <h3>Personal Information</h3>
+  <label>Full Name</label><input id="name" value="Nimisha R." oninput="render()">
+  <div class="row"><div><label>Email</label><input id="email" placeholder="your@email.com" oninput="render()"></div><div><label>Phone</label><input id="phone" placeholder="+91 ..." oninput="render()"></div></div>
+  <label>Location</label><input id="location" placeholder="City, State" oninput="render()">
+  <label>LinkedIn / Portfolio</label><input id="links" placeholder="linkedin.com/in/..." oninput="render()">
+  <label>Professional Summary</label><textarea id="summary" placeholder="Write 2–3 lines about your interests and strengths..." oninput="render()"></textarea>
+ </div>
+ <div class="group">
+  <h3>Education</h3>
+  <label>Course / Degree</label><input id="degree" placeholder="B.Tech – Artificial Intelligence and Machine Learning" oninput="render()">
+  <label>College / Institution</label><input id="college" placeholder="College name" oninput="render()">
+  <div class="row"><div><label>Year</label><input id="year" placeholder="2025–2029" oninput="render()"></div><div><label>CGPA / Score</label><input id="score" placeholder="Optional" oninput="render()"></div></div>
+ </div>
+ <div class="group">
+  <h3>Skills</h3><textarea id="skills" placeholder="Python, C, SQL, HTML, CSS..." oninput="render()"></textarea>
+ </div>
+ <div class="group">
+  <h3>Projects</h3>
+  <label>Project Title</label><input id="projectTitle" placeholder="Project name" oninput="render()">
+  <label>Description</label><textarea id="projectDesc" placeholder="What the project does and technologies used..." oninput="render()"></textarea>
+ </div>
+ <div class="group">
+  <h3>Experience / Activities</h3>
+  <textarea id="experience" placeholder="Internships, volunteering, club roles, achievements..." oninput="render()"></textarea>
+ </div>
+ <div class="group">
+  <h3>Template</h3>
+  <select id="template" onchange="render()"><option value="template1">Classic Professional</option><option value="template2">Elegant Serif</option><option value="template3">Modern Sidebar</option></select>
+ </div>
+ <div class="group">
+  <h3>Reorder Sections</h3>
+  <p class="hint">Drag the section names to change their order in the resume.</p>
+  <div id="sectionsList">
+   <div class="section-item" draggable="true" data-key="summary">☰ Summary</div>
+   <div class="section-item" draggable="true" data-key="education">☰ Education</div>
+   <div class="section-item" draggable="true" data-key="skills">☰ Skills</div>
+   <div class="section-item" draggable="true" data-key="projects">☰ Projects</div>
+   <div class="section-item" draggable="true" data-key="experience">☰ Experience & Activities</div>
+  </div>
+ </div>
+ <p class="hint">Your details stay in this browser unless you export the JSON data file. Use Export PDF and choose “Save as PDF” in the print dialog.</p>
+</section>
+<section class="panel">
+ <h2 class="preview-title">Live A4 Preview</h2>
+ <div class="preview-wrap"><article id="resume"></article></div>
+</section>
+</main>
+<script>
+const ids=['name','email','phone','location','links','summary','degree','college','year','score','skills','projectTitle','projectDesc','experience','template'];
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const val=id=>document.getElementById(id).value.trim();
+function sectionHTML(key){
+ const map={
+ summary:()=>val('summary')?`<h2>Profile</h2><p>${esc(val('summary'))}</p>`:'',
+ education:()=>val('degree')||val('college')?`<h2>Education</h2><p class="entry-title">${esc(val('degree'))}</p><p>${esc(val('college'))}</p><p class="muted">${esc([val('year'),val('score')].filter(Boolean).join(' · '))}</p>`:'',
+ skills:()=>val('skills')?`<h2>Skills</h2><p>${esc(val('skills'))}</p>`:'',
+ projects:()=>val('projectTitle')||val('projectDesc')?`<h2>Projects</h2><p class="entry-title">${esc(val('projectTitle'))}</p><p>${esc(val('projectDesc'))}</p>`:'',
+ experience:()=>val('experience')?`<h2>Experience & Activities</h2><p>${esc(val('experience'))}</p>`:''
+ };return map[key]();
+}
+function render(){
+ const contact=[val('email'),val('phone'),val('location'),val('links')].filter(Boolean).map(esc).join('  |  ');
+ const order=[...document.querySelectorAll('.section-item')].map(x=>x.dataset.key);
+ document.getElementById('resume').className=val('template');
+ document.getElementById('resume').innerHTML=`<h1>${esc(val('name')||'Your Name')}</h1><div class="contact">${contact||'Email  |  Phone  |  Location  |  Portfolio'}</div>${order.map(sectionHTML).join('')||'<p class="empty">Fill in your details to build your resume preview.</p>'}`;
+}
+function saveData(){
+ const data={};ids.forEach(id=>data[id]=document.getElementById(id).value);
+ data.order=[...document.querySelectorAll('.section-item')].map(x=>x.dataset.key);
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='my-resume-data.json';a.click();URL.revokeObjectURL(a.href);
+}
+function loadData(e){
+ const file=e.target.files[0];if(!file)return;
+ const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);ids.forEach(id=>{if(d[id]!==undefined)document.getElementById(id).value=d[id]});
+ if(Array.isArray(d.order)){const list=document.getElementById('sectionsList');d.order.forEach(k=>{const el=[...list.children].find(x=>x.dataset.key===k);if(el)list.appendChild(el);});}
+ render();alert('Resume data loaded successfully.');}catch(err){alert('Invalid resume data file.');}};reader.readAsText(file);
+}
+let dragged=null;
+document.querySelectorAll('.section-item').forEach(el=>{
+ el.addEventListener('dragstart',()=>{dragged=el;el.style.opacity='.4'});
+ el.addEventListener('dragend',()=>{el.style.opacity='1';dragged=null;render()});
+ el.addEventListener('dragover',e=>e.preventDefault());
+ el.addEventListener('drop',e=>{e.preventDefault();if(dragged&&dragged!==el){const list=el.parentNode;const rect=el.getBoundingClientRect();list.insertBefore(dragged,e.clientY<rect.top+rect.height/2?el:el.nextSibling);render();}});
+});
+render();
+</script>
+</body>
+</html>
